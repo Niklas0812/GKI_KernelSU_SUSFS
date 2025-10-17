@@ -72,7 +72,7 @@ jobs:
           #- sub_level: "129"
           #  os_patch_level: "2025-04"
           - sub_level: "134"
-           os_patch_level: "2025-05"
+            os_patch_level: "2025-05"
           # - sub_level: "145"
           #   os_patch_level: "2025-09"
           #- sub_level: "X"
