@@ -547,20 +547,21 @@ jobs:
           echo "更改为配置目录: $CONFIG..."
           cd "$CONFIG"
           
-          if [ ! -z ${{ inputs.version }} ]; then
-            echo "版本号不为空"
-            sed -i '$s|echo "\$res"|echo "${{ inputs.version }}"|' ./common/scripts/setlocalversion
-          else
-            echo "版本号为空，使用默认值"
-            sed -i '$s|echo "\$res"|echo "\$res-zakozakoooooo-1145141919"|' ./common/scripts/setlocalversion
-          fi
+          # Set the exact kernel version string
+          sed -i '$s|echo "\$res"|echo "-android14-11-g66e758f7d0c0-ab13748739"|' ./common/scripts/setlocalversion
 
-          # 如果你需要改构建时间,请把以下变量 CURRENT_TIME 修改为如下例子字符串,如:CURRENT_TIME="Sat Jun 07 06:29:29 UTC 2025"
-          # 该字符串表示 UTC时间: 2025年6月7日 06:29:29,"Sat" 是星期六的缩写，而 "Jun" 是六月的缩写
-          # 如果你想使用北京时间应为:CURRENT_TIME="Sat Jun 07 14:29:29 CST 2025"
-          CURRENT_TIME=$(date -u +"%a %b %d %H:%M:%S UTC %Y")
+          # Set the exact build date and time
+          CURRENT_TIME="Tue Jul  8 09:17:32 UTC 2025"
 
           echo "CURRENT_TIME=$CURRENT_TIME"
+
+          # Set build user and host
+          export KBUILD_BUILD_USER="build-user"
+          export KBUILD_BUILD_HOST="build-host"
+
+          # Set compiler information
+          export KBUILD_COMPILER_STRING="Android (10087095, +pgo, +bolt, +lto, -mlgo, based on r487747c) clang version 17.0.2 (https://android.googlesource.com/toolchain/llvm-project d9f89f4d16663d5012e5c09495f3b30ece3d2362), LLD 17.0.2"
+
           perl -pi -e "s{UTS_VERSION=\"\\\$\(echo \\\$UTS_VERSION \\\$CONFIG_FLAGS \\\$TIMESTAMP \\| cut -b -\\\$UTS_LEN\)\"}{UTS_VERSION=\"#1 SMP PREEMPT $CURRENT_TIME\"}" ./common/scripts/mkcompile_h
 
           # Apply specific Makefile modification for kernel versions 6.1 and 6.6 only
@@ -590,6 +591,12 @@ jobs:
             set -e
             set -x
             cd "$CONFIG"
+
+            # Set build user, host and compiler info for the build process
+            export KBUILD_BUILD_USER="build-user"
+            export KBUILD_BUILD_HOST="build-host"
+            export KBUILD_COMPILER_STRING="Android (10087095, +pgo, +bolt, +lto, -mlgo, based on r487747c) clang version 17.0.2 (https://android.googlesource.com/toolchain/llvm-project d9f89f4d16663d5012e5c09495f3b30ece3d2362), LLD 17.0.2"
+
             # 替换 BUILD_SYSTEM_DLKM=1 为 BUILD_SYSTEM_DLKM=0
             sed -i 's/BUILD_SYSTEM_DLKM=1/BUILD_SYSTEM_DLKM=0/' common/build.config.gki.aarch64
 
