@@ -543,6 +543,29 @@ jobs:
         run: |
           echo "更改为配置目录: $CONFIG..."
           cd "$CONFIG"
+
+          echo "Hardcoding /proc/version..."
+          cat <<'EOF' > ./common/fs/proc/version.c
+          #include <linux/fs.h>
+          #include <linux/init.h>
+          #include <linux/kernel.h>
+          #include <linux/proc_fs.h>
+          #include <linux/seq_file.h>
+          #include <linux/utsname.h>
+
+          static int version_proc_show(struct seq_file *m, void *v)
+          {
+            seq_puts(m, "Linux version 6.1.134-android14-11-g66e758f7d0c0-ab13748739 (build-user@build-host) (Android (10087095, +pgo, +bolt, +lto, -mlgo, based on r487747c) clang version 17.0.2 (https://android.googlesource.com/toolchain/llvm-project d9f89f4d16663d5012e5c09495f3b30ece3d2362), LLD 17.0.2) #1 SMP PREEMPT Tue Jul  8 09:17:32 UTC 2025\n");
+            return 0;
+          }
+
+          static int __init proc_version_init(void)
+          {
+            proc_create_single("version", 0, NULL, version_proc_show);
+            return 0;
+          }
+          module_init(proc_version_init);
+          EOF
           
           if [ ! -z ${{ inputs.version }} ]; then
             echo "版本号不为空"
