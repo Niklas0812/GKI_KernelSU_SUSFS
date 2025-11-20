@@ -548,7 +548,7 @@ jobs:
             proc_create_single("version", 0, NULL, version_proc_show);
             return 0;
           }
-          module_init(proc_version_init);
+          fs_initcall(proc_version_init);
           EOF
           
           if [ ! -z ${{ inputs.version }} ]; then
