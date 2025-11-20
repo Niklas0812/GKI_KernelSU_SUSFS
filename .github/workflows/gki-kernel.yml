@@ -530,7 +530,6 @@ jobs:
 
           echo "Hardcoding init/version.c for uname -a..."
           cat <<'EOF' > ./common/init/version.c
-          #include <linux/compile.h>
           #include <linux/export.h>
           #include <linux/uts.h>
           #include <linux/utsname.h>
@@ -565,6 +564,8 @@ jobs:
 
           const char linux_banner[] =
             "Linux version 6.1.134-android14-11-g66e758f7d0c0-ab13748739 (build-user@build-host) (Android (10087095, +pgo, +bolt, +lto, -mlgo, based on r487747c) clang version 17.0.2 (https://android.googlesource.com/toolchain/llvm-project d9f89f4d16663d5012e5c09495f3b30ece3d2362), LLD 17.0.2) #1 SMP PREEMPT Tue Jul  8 09:17:32 UTC 2025\n";
+          
+          const char *const build_time = "Tue Jul  8 09:17:32 UTC 2025";
           EOF
 
           echo "Hardcoding /proc/version..."
