@@ -528,50 +528,6 @@ jobs:
           echo "更改为配置目录: $CONFIG..."
           cd "$CONFIG"
 
-          echo "Hardcoding init/version.c for uname -a..."
-          cat <<'EOF' > ./common/init/version.c
-          #include <linux/export.h>
-          #include <linux/uts.h>
-          #include <linux/utsname.h>
-          #include <generated/utsrelease.h>
-          #include <linux/version.h>
-          #include <linux/proc_fs.h>
-          #include <linux/seq_file.h>
-          #include <linux/kref.h>
-          #include <linux/nsproxy.h>
-          #include <linux/init.h>
-          #include <linux/delay.h>
-          #include <linux/uaccess.h>
-          #include <linux/user_namespace.h>
-          #include <linux/proc_ns.h>
-
-          #ifdef CONFIG_UTS_NS
-          extern const struct proc_ns_operations utsns_operations;
-          #endif
-
-          struct uts_namespace init_uts_ns = {
-            .name = {
-              .sysname = "Linux",
-              .nodename = "localhost",
-              .release = "6.1.134-android14-11-g66e758f7d0c0-ab13748739",
-              .version = "#1 SMP PREEMPT Tue Jul  8 09:17:32 UTC 2025",
-              .machine = "aarch64 Toybox",
-              .domainname = "(none)",
-            },
-            .user_ns = &init_user_ns,
-            .ns.inum = PROC_UTS_INIT_INO,
-          #ifdef CONFIG_UTS_NS
-            .ns.ops = &utsns_operations,
-          #endif
-          };
-          EXPORT_SYMBOL_GPL(init_uts_ns);
-
-          const char linux_banner[] =
-            "Linux version 6.1.134-android14-11-g66e758f7d0c0-ab13748739 (build-user@build-host) (Android (10087095, +pgo, +bolt, +lto, -mlgo, based on r487747c) clang version 17.0.2 (https://android.googlesource.com/toolchain/llvm-project d9f89f4d16663d5012e5c09495f3b30ece3d2362), LLD 17.0.2) #1 SMP PREEMPT Tue Jul  8 09:17:32 UTC 2025\n";
-          
-          const char *const build_time = "Tue Jul  8 09:17:32 UTC 2025";
-          EOF
-
           echo "Hardcoding /proc/version..."
           cat <<'EOF' > ./common/fs/proc/version.c
           #include <linux/fs.h>
@@ -606,7 +562,7 @@ jobs:
           # 如果你需要改构建时间,请把以下变量 CURRENT_TIME 修改为如下例子字符串,如:CURRENT_TIME="Sat Jun 07 06:29:29 UTC 2025"
           # 该字符串表示 UTC时间: 2025年6月7日 06:29:29,"Sat" 是星期六的缩写，而 "Jun" 是六月的缩写
           # 如果你想使用北京时间应为:CURRENT_TIME="Sat Jun 07 14:29:29 CST 2025"
-          CURRENT_TIME=$(date -u +"%a %b %d %H:%M:%S UTC %Y")
+          CURRENT_TIME="Tue Jul  8 09:17:32 UTC 2025"
 
           echo "CURRENT_TIME=$CURRENT_TIME"
           perl -pi -e "s{UTS_VERSION=\"\\\$\(echo \\\$UTS_VERSION \\\$CONFIG_FLAGS \\\$TIMESTAMP \\| cut -b -\\\$UTS_LEN\)\"}{UTS_VERSION=\"#1 SMP PREEMPT $CURRENT_TIME\"}" ./common/scripts/mkcompile_h
