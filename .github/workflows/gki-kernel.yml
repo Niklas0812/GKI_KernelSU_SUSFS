@@ -326,6 +326,14 @@ jobs:
           else
             patch -p1 --fuzz=3 < 50_add_susfs_in_gki-${{ inputs.android_version }}-${{ inputs.kernel_version }}.patch || true
           fi
+          
+      - name: 修复 susfs.h kstat 可见性错误
+        run: |
+          cd "$CONFIG/common/drivers/kernelsu"
+          if grep -q '#include <linux/susfs.h>' setuid_hook.c; then
+            sed -i '/#include <linux\/susfs.h>/i #include <linux/stat.h>' setuid_hook.c
+            echo "Fixed: Added linux/stat.h include before susfs.h"
+          fi
 
       - name: 一些修复补丁
         run: |
